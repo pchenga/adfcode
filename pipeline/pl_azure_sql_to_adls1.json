@@ -1,5 +1,5 @@
 {
-	"name": "pl_azure_sql_to_adls",
+	"name": "pl_azure_sql_to_adls1",
 	"properties": {
 		"activities": [
 			{
