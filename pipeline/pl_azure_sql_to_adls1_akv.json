@@ -1,0 +1,119 @@
+{
+	"name": "pl_azure_sql_to_adls1_akv",
+	"properties": {
+		"activities": [
+			{
+				"name": "Ingest data from sql to ADLS",
+				"description": "Ingest data from sql to ADLS",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:05:00",
+					"retry": 3,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.emp_table"
+					},
+					{
+						"name": "Destination",
+						"value": "output/csv/employee_data.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"enableSkipIncompatibleRow": true,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "eid",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "employee_id",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ename",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "employee_name",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "sal",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 10,
+									"precision": 18
+								},
+								"sink": {
+									"name": "salary",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "deptid",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "dept_id",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet1",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-02-15T02:06:10Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
